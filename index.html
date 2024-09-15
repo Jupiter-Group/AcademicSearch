@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rubisco Academic Search</title>
+    <link rel="shortcut icon" href="assets/images/favicon.png" type="image/x-icon">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header>
+        <h1>Rubisco Academic Search</h1>
+        <p>Thank you to arXiv for use of its open access interoperability.</p>
+    </header>
+    <main>
+        <section id="search-section">
+            <form id="search-form">
+                <input type="text" id="query" name="query" placeholder="Enter your search query" required>
+                <select id="num-results" name="num-results">
+                    <option value="10">10</option>
+                    <option value="20">20</option>
+                    <option value="30">30</option>
+                </select>
+                <button type="submit"> Search</button>
+            </form>
+        </section>
+        <section id="results-section">
+            <h2>Search Results</h2>
+            <div id="results"></div>
+            <button id="load-more" style="display:none;"> Load More</button>
+        </section>
+    </main>
+    <script src="script.js"></script>
+</body>
+</html>

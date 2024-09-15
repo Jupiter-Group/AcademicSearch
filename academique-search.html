@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rubisco Academic Search</title>
+</head>
+<style>
+    @font-face {
+        font-family: 'iconacht';
+        src: url(./RubiscoAdacemicSearchIcons.ttf);
+    }
+
+    @font-face {
+        font-family: 'Rubisco Sans';
+        src: url(./RubiscoSans-Regular.ttf);
+    }
+
+    @font-face {
+        font-family: 'Grotsk';
+        src: url(./Grotsk-Regular.ttf);
+    }
+
+    @font-face {
+        font-family: 'Rubisco Sans Text';
+        src: url(./RubiscoSansText-Regular.ttf);
+    }
+
+    @font-face {
+        font-family: 'Rubisco Sans Text Bold';
+        src: url(./RubiscoSansText-Bold.ttf);
+    }
+
+    body {
+        font-family: 'Grotsk', 'Rubisco Sans Text', sans-serif;
+        margin: 0;
+        padding: 0;
+        background-color: #f4f4f4;
+    }
+
+    header {
+        font-family: 'Rubisco Sans', sans-serif;
+        font-weight: 400;
+        background-color: #333;
+        color: #fff;
+        text-align: center;
+        padding: 1em 0;
+    }
+
+    header, p {
+        font-family: 'Grotsk', sans-serif;
+    }
+
+    h1 {
+        font-family: 'Rubisco Sans', sans-serif;
+        font-weight: 400;
+    }
+
+    h2 {
+        font-family: 'Rubisco Sans Text Bold', sans-serif;
+        font-weight: 600;
+    }
+
+    main {
+        padding: 1em;
+    }
+
+    #search-section {
+        text-align: center;
+        margin-bottom: 2em;
+    }
+
+    #search-form input, #search-form select, #search-form button {
+        font-family: 'iconacht', 'Grotsk', 'Rubisco Sans Text', sans-serif;
+        padding: 0.5em;
+        font-size: 1em;
+    }
+
+    #search-form input {
+        font-family: 'Grotsk', 'Rubisco Sans Text', sans-serif;
+        width: 60%;
+        margin-right: 1%;
+    }
+
+    #search-form select {
+        width: 10%;
+        margin-right: 1%;
+    }
+
+    #search-form button {
+        font-size: 18px;
+        font-family: 'iconacht', 'Grotsk', 'Rubisco Sans Text', sans-serif;
+        cursor: pointer;
+        width: 20%;
+    }
+
+    #results-section {
+        background-color: #fff;
+        padding: 1em;
+        border-radius: 5px;
+    }
+
+    .result-item {
+        border-bottom: 1px solid #ccc;
+        padding: 1em 0;
+    }
+
+    .result-item:last-child {
+        border-bottom: none;
+    }
+
+    .result-title {
+        font-family: 'Rubisco Sans';
+        font-weight: 400;
+        font-size: 1.2em;
+        margin: 0 0 0.5em;
+    }
+
+    .result-title a {
+        text-decoration: none;
+        color: #0066cc;
+    }
+
+    .result-title a:hover {
+        text-decoration: underline;
+    }
+
+    .result-authors, .result-date {
+        font-size: 0.9em;
+        color: #666;
+    }
+
+    #load-more {
+        font-family: 'iconacht', 'Rubisco Sans', sans-serif;
+        display: block;
+        margin: 2em auto;
+        padding: 0.5em 2em;
+        font-size: 1em;
+        cursor: pointer;
+    }
+</style>
+<body>
+    <header>
+        <h1>Rubisco Academic Search</h1>
+        <p>Thank you to arXiv for use of its open access interoperability.</p>
+    </header>
+    <main>
+        <section id="search-section">
+            <form id="search-form">
+                <input type="text" id="query" name="query" placeholder="Enter your search query" required>
+                <select id="num-results" name="num-results">
+                    <option value="10">10</option>
+                    <option value="20">20</option>
+                    <option value="30">30</option>
+                </select>
+                <button type="submit"> Search</button>
+            </form>
+        </section>
+        <section id="results-section">
+            <h2>Search Results</h2>
+            <div id="results"></div>
+            <button id="load-more" style="display:none;"> Load More</button>
+        </section>
+    </main>
+    <script>
+        let start = 0;
+let maxResults = 10;
+let query = '';
+
+document.getElementById('search-form').addEventListener('submit', function(event) {
+    event.preventDefault();
+    query = document.getElementById('query').value;
+    maxResults = document.getElementById('num-results').value;
+    start = 0;
+    fetchResults(query, maxResults, start, true);
+});
+
+document.getElementById('load-more').addEventListener('click', function() {
+    start += parseInt(maxResults);
+    fetchResults(query, maxResults, start, false);
+});
+
+function fetchResults(query, maxResults, start, reset) {
+    const url = `https://export.arxiv.org/api/query?search_query=all:${query}&start=${start}&max_results=${maxResults}`;
+    fetch(url)
+        .then(response => response.text())
+        .then(data => {
+            const parser = new DOMParser();
+            const xmlDoc = parser.parseFromString(data, "text/xml");
+            const entries = xmlDoc.getElementsByTagName('entry');
+            displayResults(entries, reset);
+        })
+        .catch(error => console.error('Error fetching data:', error));
+}
+
+function displayResults(entries, reset) {
+    const resultsDiv = document.getElementById('results');
+    if (reset) {
+        resultsDiv.innerHTML = '';
+    }
+
+    Array.from(entries).forEach(entry => {
+        const title = entry.getElementsByTagName('title')[0].textContent;
+        const authors = Array.from(entry.getElementsByTagName('author')).map(author => author.getElementsByTagName('name')[0].textContent).join(', ');
+        const publishedDate = entry.getElementsByTagName('published')[0].textContent;
+        const link = entry.getElementsByTagName('id')[0].textContent;
+
+        const resultItem = document.createElement('div');
+        resultItem.classList.add('result-item');
+
+        const resultTitle = document.createElement('div');
+        resultTitle.classList.add('result-title');
+        resultTitle.innerHTML = `<a href="${link}" target="_blank">${title}</a>`;
+
+        const resultAuthors = document.createElement('div');
+        resultAuthors.classList.add('result-authors');
+        resultAuthors.textContent = `Authors: ${authors}`;
+
+        const resultDate = document.createElement('div');
+        resultDate.classList.add('result-date');
+        resultDate.textContent = `Published Date: ${publishedDate}`;
+
+        resultItem.appendChild(resultTitle);
+        resultItem.appendChild(resultAuthors);
+        resultItem.appendChild(resultDate);
+
+        resultsDiv.appendChild(resultItem);
+    });
+
+    if (entries.length === parseInt(maxResults)) {
+        document.getElementById('load-more').style.display = 'block';
+    } else {
+        document.getElementById('load-more').style.display = 'none';
+    }
+}
+
+    </script>
+</body>
+</html>
