@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Book Search</title>
+    <link rel="stylesheet" href="goog.css">
+</head>
+<body>
+    <header>
+        <h1>Book Search</h1>
+        <p>Find the information for any book you need.</p>
+    </header>
+    <main>
+        <div class="search-container">
+            <input type="text" id="searchInput" placeholder="Search...">
+            <select id="searchType">
+                <option value="all" selected="true">All</option>
+                <option value="author">Author</option>
+                <option value="title">Title</option>
+                <option value="publisher">Publisher</option>
+                <option value="isbn">ISBN</option>
+            </select>
+            <button id="searchButton">Search</button>
+        </div>
+        <div id="loading" class="loading">Loading...</div>
+        <div id="noResults" class="no-results">No results found.</div>
+        <div id="results" class="results"></div>
+    </main>
+    <script src="script.js"></script>
+</body>
+</html>
